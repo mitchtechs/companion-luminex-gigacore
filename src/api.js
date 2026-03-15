@@ -15,6 +15,10 @@ export class GigaCoreApi {
 		return `http://${this.#host}/api`
 	}
 
+	get supportsWebSocket() {
+		return true
+	}
+
 	#headers() {
 		const h = { Accept: 'application/json' }
 		if (this.#authHeader) {

@@ -19,7 +19,13 @@
 		"GigaCore 16t",
 		"GigaCore 18t",
 		"GigaCore 20t",
-		"GigaCore 30i"
+		"GigaCore 30i",
+		"GigaCore 10",
+		"GigaCore 12",
+		"GigaCore 14R",
+		"GigaCore 16Xt",
+		"GigaCore 16RFO",
+		"GigaCore 26i"
 	],
 	"keywords": ["network", "switch", "av", "ethernet"],
 	"legacyIds": []

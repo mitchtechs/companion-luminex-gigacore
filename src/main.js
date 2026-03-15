@@ -1,6 +1,8 @@
 import { InstanceBase, InstanceStatus, runEntrypoint } from '@companion-module/base'
 import { getConfigFields } from './config.js'
 import { GigaCoreApi } from './api.js'
+import { GigaCoreGen1Api } from './api-gen1.js'
+import { GigaCoreWebSocket } from './websocket.js'
 import { updateActionDefinitions } from './actions.js'
 import { updateFeedbackDefinitions } from './feedbacks.js'
 import { updateVariableDefinitions, updateVariableValues } from './variables.js'
@@ -9,6 +11,7 @@ import { UpgradeScripts } from './upgrades.js'
 
 class LuminexGigaCoreInstance extends InstanceBase {
 	api = null
+	ws = null
 	pollTimer = null
 
 	state = {
@@ -30,16 +33,18 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		this.initDefinitions()
 		await this.poll()
 		this.startPolling()
+		this.connectWebSocket()
 	}
 
 	async configUpdated(config) {
 		this.config = config
-		this.stopPolling()
+		this.destroyConnections()
 		this.initApi()
 		this.updateStatus(InstanceStatus.Connecting)
 		await this.poll()
 		this.refreshDefinitions()
 		this.startPolling()
+		this.connectWebSocket()
 	}
 
 	getConfigFields() {
@@ -47,7 +52,15 @@ class LuminexGigaCoreInstance extends InstanceBase {
 	}
 
 	async destroy() {
+		this.destroyConnections()
+	}
+
+	destroyConnections() {
 		this.stopPolling()
+		if (this.ws) {
+			this.ws.destroy()
+			this.ws = null
+		}
 	}
 
 	initApi() {
@@ -55,7 +68,112 @@ class LuminexGigaCoreInstance extends InstanceBase {
 			this.updateStatus(InstanceStatus.BadConfig, 'No host configured')
 			return
 		}
-		this.api = new GigaCoreApi(this.config.host, this.config.password)
+
+		if (this.config.generation === 'gen1') {
+			this.api = new GigaCoreGen1Api(this.config.host, this.config.password)
+		} else {
+			this.api = new GigaCoreApi(this.config.host, this.config.password)
+		}
+	}
+
+	connectWebSocket() {
+		if (!this.api?.supportsWebSocket || !this.config.host) return
+
+		this.ws = new GigaCoreWebSocket({
+			host: this.config.host,
+			password: this.config.password,
+			onUpdate: (path, data) => this.handleWebSocketUpdate(path, data),
+			onConnectionChange: (status) => this.handleWebSocketStatus(status),
+			log: (level, msg) => this.log(level, msg),
+		})
+		this.ws.connect()
+	}
+
+	handleWebSocketStatus(status) {
+		if (status === 'connected') {
+			this.log('debug', 'WebSocket connected - real-time updates active')
+		} else if (status === 'disconnected' || status === 'error') {
+			this.log('debug', 'WebSocket disconnected - falling back to polling')
+		}
+	}
+
+	handleWebSocketUpdate(path, data) {
+		let changed = false
+
+		switch (path) {
+			case 'device':
+				this.state.device = data
+				changed = true
+				break
+
+			case 'ports/port': {
+				// "changes" mode - data is an array of changed ports
+				const updates = Array.isArray(data) ? data : [data]
+				for (const update of updates) {
+					const idx = this.state.ports.findIndex((p) => p.port_number === update.port_number)
+					if (idx >= 0) {
+						this.state.ports[idx] = { ...this.state.ports[idx], ...update }
+					} else {
+						this.state.ports.push(update)
+					}
+				}
+				changed = true
+				break
+			}
+
+			case 'groups/group':
+				this.state.groups = Array.isArray(data) ? data : [data]
+				changed = true
+				break
+
+			case 'trunks/trunk':
+				this.state.trunks = Array.isArray(data) ? data : [data]
+				changed = true
+				break
+
+			case 'config/name':
+				this.state.activeProfile = typeof data === 'string' ? data : data?.name ?? ''
+				changed = true
+				break
+
+			case 'config/profiles': {
+				const profileUpdates = Array.isArray(data) ? data : [data]
+				for (const update of profileUpdates) {
+					const idx = this.state.profiles.findIndex((p) => p.slot === update.slot)
+					if (idx >= 0) {
+						this.state.profiles[idx] = { ...this.state.profiles[idx], ...update }
+					} else {
+						this.state.profiles.push(update)
+					}
+				}
+				changed = true
+				break
+			}
+
+			case 'poe/capable':
+				this.state.poeCapable = !!data
+				changed = true
+				break
+
+			case 'poe/ports': {
+				const poeUpdates = Array.isArray(data) ? data : [data]
+				for (const update of poeUpdates) {
+					const idx = this.state.poePorts.findIndex((p) => p.port_number === update.port_number)
+					if (idx >= 0) {
+						this.state.poePorts[idx] = { ...this.state.poePorts[idx], ...update }
+					} else {
+						this.state.poePorts.push(update)
+					}
+				}
+				changed = true
+				break
+			}
+		}
+
+		if (changed) {
+			updateVariableValues(this)
+			this.checkFeedbacks()
+		}
 	}
 
 	initDefinitions() {
@@ -109,6 +227,11 @@ class LuminexGigaCoreInstance extends InstanceBase {
 			this.state.trunks = trunks ?? []
 			this.state.activeProfile = typeof profileName === 'string' ? profileName : profileName?.name ?? ''
 			this.state.profiles = profiles ?? []
+
+			// Gen1: merge group/trunk assignments into port objects
+			if (this.api.mergePortAssignments) {
+				this.api.mergePortAssignments(this.state.ports)
+			}
 
 			// Fetch PoE state if capable
 			try {
