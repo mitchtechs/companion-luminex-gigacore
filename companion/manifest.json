@@ -1,0 +1,26 @@
+{
+	"id": "luminex-gigacore",
+	"name": "luminex-gigacore",
+	"shortname": "GigaCore",
+	"description": "Control Luminex GigaCore network switches via REST API",
+	"version": "0.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-luminex-gigacore.git",
+	"bugs": "https://github.com/bitfocus/companion-module-luminex-gigacore/issues",
+	"maintainers": [{ "name": "Mitch Bailey" }],
+	"type": "node22",
+	"api": "nodejs-ipc",
+	"entrypoint": "../src/main.js",
+	"manufacturer": "Luminex",
+	"products": [
+		"GigaCore 10i",
+		"GigaCore 10t",
+		"GigaCore 16i",
+		"GigaCore 16t",
+		"GigaCore 18t",
+		"GigaCore 20t",
+		"GigaCore 30i"
+	],
+	"keywords": ["network", "switch", "av", "ethernet"],
+	"legacyIds": []
+}
