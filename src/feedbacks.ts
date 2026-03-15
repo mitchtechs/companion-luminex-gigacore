@@ -1,17 +1,27 @@
-import { combineRgb } from '@companion-module/base'
+import type { CompanionFeedbackDefinitions } from '@companion-module/base'
+import type { ModuleInstance } from './main.js'
+import type { PortInfo } from './types.js'
+import { Green, White, Blue, Amber, Red, Black } from './colors.js'
 
-export function updateFeedbackDefinitions(self) {
-	const portChoices = buildPortChoices(self)
-	const profileChoices = buildProfileChoices(self)
+export enum FeedbackId {
+	PortEnabled = 'port_enabled',
+	PortLinkUp = 'port_link_up',
+	PortInGroup = 'port_in_group',
+	ActiveProfile = 'active_profile',
+	PoeActive = 'poe_active',
+}
 
-	self.setFeedbackDefinitions({
-		port_enabled: {
+export function UpdateFeedbacks(self: ModuleInstance): void {
+	const portChoices = buildPortChoices(self.state.ports)
+
+	const feedbacks: CompanionFeedbackDefinitions = {
+		[FeedbackId.PortEnabled]: {
 			name: 'Port Enabled',
 			type: 'boolean',
 			description: 'True when the specified port is enabled',
 			defaultStyle: {
-				bgcolor: combineRgb(0, 204, 0),
-				color: combineRgb(255, 255, 255),
+				bgcolor: Green,
+				color: White,
 			},
 			options: [
 				{
@@ -23,18 +33,18 @@ export function updateFeedbackDefinitions(self) {
 				},
 			],
 			callback: (feedback) => {
-				const port = self.state.ports?.find((p) => p.port_number === feedback.options.port)
+				const port = self.state.ports.find((p) => p.port_number === feedback.options.port)
 				return port?.enabled === true
 			},
 		},
 
-		port_link_up: {
+		[FeedbackId.PortLinkUp]: {
 			name: 'Port Link Up',
 			type: 'boolean',
 			description: 'True when the specified port has an active link',
 			defaultStyle: {
-				bgcolor: combineRgb(0, 204, 0),
-				color: combineRgb(255, 255, 255),
+				bgcolor: Green,
+				color: White,
 			},
 			options: [
 				{
@@ -46,18 +56,18 @@ export function updateFeedbackDefinitions(self) {
 				},
 			],
 			callback: (feedback) => {
-				const port = self.state.ports?.find((p) => p.port_number === feedback.options.port)
+				const port = self.state.ports.find((p) => p.port_number === feedback.options.port)
 				return port?.link_state === 'up'
 			},
 		},
 
-		port_in_group: {
+		[FeedbackId.PortInGroup]: {
 			name: 'Port in Group',
 			type: 'boolean',
 			description: 'True when the specified port is assigned to the specified group',
 			defaultStyle: {
-				bgcolor: combineRgb(0, 102, 204),
-				color: combineRgb(255, 255, 255),
+				bgcolor: Blue,
+				color: White,
 			},
 			options: [
 				{
@@ -77,18 +87,18 @@ export function updateFeedbackDefinitions(self) {
 				},
 			],
 			callback: (feedback) => {
-				const port = self.state.ports?.find((p) => p.port_number === feedback.options.port)
+				const port = self.state.ports.find((p) => p.port_number === feedback.options.port)
 				return port?.member_of?.type === 'group' && port?.member_of?.id === feedback.options.group
 			},
 		},
 
-		active_profile: {
+		[FeedbackId.ActiveProfile]: {
 			name: 'Active Profile',
 			type: 'boolean',
 			description: 'True when the specified profile is the active one',
 			defaultStyle: {
-				bgcolor: combineRgb(204, 153, 0),
-				color: combineRgb(0, 0, 0),
+				bgcolor: Amber,
+				color: Black,
 			},
 			options: [
 				{
@@ -103,13 +113,13 @@ export function updateFeedbackDefinitions(self) {
 			},
 		},
 
-		poe_active: {
+		[FeedbackId.PoeActive]: {
 			name: 'PoE Active',
 			type: 'boolean',
-			description: 'True when PoE is enabled and sourcing on the specified port',
+			description: 'True when PoE is enabled on the specified port',
 			defaultStyle: {
-				bgcolor: combineRgb(204, 0, 0),
-				color: combineRgb(255, 255, 255),
+				bgcolor: Red,
+				color: White,
 			},
 			options: [
 				{
@@ -121,31 +131,16 @@ export function updateFeedbackDefinitions(self) {
 				},
 			],
 			callback: (feedback) => {
-				const poePort = self.state.poePorts?.find((p) => p.port_number === feedback.options.port)
+				const poePort = self.state.poePorts.find((p) => p.port_number === feedback.options.port)
 				return poePort?.enabled === true
 			},
 		},
-	})
+	}
+
+	self.setFeedbackDefinitions(feedbacks)
 }
 
-function buildPortChoices(self) {
-	if (!self.state?.ports?.length) {
-		return [{ id: 1, label: 'Port 1' }]
-	}
-	return self.state.ports.map((p) => ({
-		id: p.port_number,
-		label: p.legend || `Port ${p.port_number}`,
-	}))
-}
-
-function buildProfileChoices(self) {
-	if (!self.state?.profiles?.length) {
-		return []
-	}
-	return self.state.profiles
-		.filter((p) => p.name)
-		.map((p) => ({
-			id: p.slot,
-			label: p.name || `Slot ${p.slot}`,
-		}))
+function buildPortChoices(ports: PortInfo[]) {
+	if (!ports.length) return [{ id: 1, label: 'Port 1' }]
+	return ports.map((p) => ({ id: p.port_number, label: p.legend || `Port ${p.port_number}` }))
 }

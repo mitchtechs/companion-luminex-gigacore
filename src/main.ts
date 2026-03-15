@@ -1,20 +1,22 @@
-import { InstanceBase, InstanceStatus, runEntrypoint } from '@companion-module/base'
-import { getConfigFields } from './config.js'
+import { InstanceBase, InstanceStatus, type SomeCompanionConfigField, runEntrypoint } from '@companion-module/base'
+import { GetConfigFields, type ModuleConfig } from './config.js'
 import { GigaCoreApi } from './api.js'
 import { GigaCoreGen1Api } from './api-gen1.js'
-import { GigaCoreWebSocket } from './websocket.js'
-import { updateActionDefinitions } from './actions.js'
-import { updateFeedbackDefinitions } from './feedbacks.js'
-import { updateVariableDefinitions, updateVariableValues } from './variables.js'
-import { updatePresetDefinitions } from './presets.js'
+import { GigaCoreWebSocket, type WsUpdatePath } from './websocket.js'
+import { UpdateActions } from './actions.js'
+import { UpdateFeedbacks } from './feedbacks.js'
+import { UpdateVariableDefinitions, UpdateVariableValues } from './variables.js'
+import { UpdatePresets } from './presets.js'
 import { UpgradeScripts } from './upgrades.js'
+import type { GigaCoreApiInterface, GigaCoreState, PoePortInfo, PortInfo, ProfileInfo } from './types.js'
 
-class LuminexGigaCoreInstance extends InstanceBase {
-	api = null
-	ws = null
-	pollTimer = null
+export class ModuleInstance extends InstanceBase<ModuleConfig> {
+	config!: ModuleConfig
+	api: GigaCoreApiInterface | null = null
+	private ws: GigaCoreWebSocket | null = null
+	private pollTimer: ReturnType<typeof setInterval> | null = null
 
-	state = {
+	state: GigaCoreState = {
 		device: null,
 		ports: [],
 		groups: [],
@@ -25,7 +27,7 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		poePorts: [],
 	}
 
-	async init(config) {
+	async init(config: ModuleConfig): Promise<void> {
 		this.config = config
 		this.updateStatus(InstanceStatus.Connecting)
 
@@ -36,7 +38,7 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		this.connectWebSocket()
 	}
 
-	async configUpdated(config) {
+	async configUpdated(config: ModuleConfig): Promise<void> {
 		this.config = config
 		this.destroyConnections()
 		this.initApi()
@@ -47,15 +49,15 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		this.connectWebSocket()
 	}
 
-	getConfigFields() {
-		return getConfigFields()
+	getConfigFields(): SomeCompanionConfigField[] {
+		return GetConfigFields()
 	}
 
-	async destroy() {
+	async destroy(): Promise<void> {
 		this.destroyConnections()
 	}
 
-	destroyConnections() {
+	private destroyConnections(): void {
 		this.stopPolling()
 		if (this.ws) {
 			this.ws.destroy()
@@ -63,7 +65,7 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		}
 	}
 
-	initApi() {
+	private initApi(): void {
 		if (!this.config.host) {
 			this.updateStatus(InstanceStatus.BadConfig, 'No host configured')
 			return
@@ -76,7 +78,7 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		}
 	}
 
-	connectWebSocket() {
+	private connectWebSocket(): void {
 		if (!this.api?.supportsWebSocket || !this.config.host) return
 
 		this.ws = new GigaCoreWebSocket({
@@ -89,26 +91,25 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		this.ws.connect()
 	}
 
-	handleWebSocketStatus(status) {
+	private handleWebSocketStatus(status: 'connected' | 'disconnected' | 'error'): void {
 		if (status === 'connected') {
 			this.log('debug', 'WebSocket connected - real-time updates active')
-		} else if (status === 'disconnected' || status === 'error') {
+		} else {
 			this.log('debug', 'WebSocket disconnected - falling back to polling')
 		}
 	}
 
-	handleWebSocketUpdate(path, data) {
+	private handleWebSocketUpdate(path: WsUpdatePath, data: unknown): void {
 		let changed = false
 
 		switch (path) {
 			case 'device':
-				this.state.device = data
+				this.state.device = data as GigaCoreState['device']
 				changed = true
 				break
 
 			case 'ports/port': {
-				// "changes" mode - data is an array of changed ports
-				const updates = Array.isArray(data) ? data : [data]
+				const updates = Array.isArray(data) ? (data as PortInfo[]) : [data as PortInfo]
 				for (const update of updates) {
 					const idx = this.state.ports.findIndex((p) => p.port_number === update.port_number)
 					if (idx >= 0) {
@@ -122,22 +123,29 @@ class LuminexGigaCoreInstance extends InstanceBase {
 			}
 
 			case 'groups/group':
-				this.state.groups = Array.isArray(data) ? data : [data]
+				this.state.groups = Array.isArray(data)
+					? (data as GigaCoreState['groups'])
+					: [data as GigaCoreState['groups'][0]]
 				changed = true
 				break
 
 			case 'trunks/trunk':
-				this.state.trunks = Array.isArray(data) ? data : [data]
+				this.state.trunks = Array.isArray(data)
+					? (data as GigaCoreState['trunks'])
+					: [data as GigaCoreState['trunks'][0]]
 				changed = true
 				break
 
 			case 'config/name':
-				this.state.activeProfile = typeof data === 'string' ? data : data?.name ?? ''
+				this.state.activeProfile =
+					typeof data === 'string' ? data : ((data as { name?: string })?.name ?? '')
 				changed = true
 				break
 
 			case 'config/profiles': {
-				const profileUpdates = Array.isArray(data) ? data : [data]
+				const profileUpdates = Array.isArray(data)
+					? (data as ProfileInfo[])
+					: [data as ProfileInfo]
 				for (const update of profileUpdates) {
 					const idx = this.state.profiles.findIndex((p) => p.slot === update.slot)
 					if (idx >= 0) {
@@ -156,7 +164,9 @@ class LuminexGigaCoreInstance extends InstanceBase {
 				break
 
 			case 'poe/ports': {
-				const poeUpdates = Array.isArray(data) ? data : [data]
+				const poeUpdates = Array.isArray(data)
+					? (data as PoePortInfo[])
+					: [data as PoePortInfo]
 				for (const update of poeUpdates) {
 					const idx = this.state.poePorts.findIndex((p) => p.port_number === update.port_number)
 					if (idx >= 0) {
@@ -171,41 +181,41 @@ class LuminexGigaCoreInstance extends InstanceBase {
 		}
 
 		if (changed) {
-			updateVariableValues(this)
+			UpdateVariableValues(this)
 			this.checkFeedbacks()
 		}
 	}
 
-	initDefinitions() {
-		updateActionDefinitions(this)
-		updateFeedbackDefinitions(this)
-		updateVariableDefinitions(this)
-		updatePresetDefinitions(this)
+	private initDefinitions(): void {
+		UpdateActions(this)
+		UpdateFeedbacks(this)
+		UpdateVariableDefinitions(this)
+		UpdatePresets(this)
 	}
 
-	refreshDefinitions() {
-		updateActionDefinitions(this)
-		updateFeedbackDefinitions(this)
-		updateVariableDefinitions(this)
-		updateVariableValues(this)
-		updatePresetDefinitions(this)
+	private refreshDefinitions(): void {
+		UpdateActions(this)
+		UpdateFeedbacks(this)
+		UpdateVariableDefinitions(this)
+		UpdateVariableValues(this)
+		UpdatePresets(this)
 		this.checkFeedbacks()
 	}
 
-	startPolling() {
+	private startPolling(): void {
 		this.stopPolling()
 		const interval = this.config.pollInterval ?? 5000
 		this.pollTimer = setInterval(() => this.poll(), interval)
 	}
 
-	stopPolling() {
+	private stopPolling(): void {
 		if (this.pollTimer) {
 			clearInterval(this.pollTimer)
 			this.pollTimer = null
 		}
 	}
 
-	async poll() {
+	async poll(): Promise<void> {
 		if (!this.api) return
 
 		try {
@@ -218,14 +228,15 @@ class LuminexGigaCoreInstance extends InstanceBase {
 				this.api.getProfiles(),
 			])
 
-			const portCountChanged = this.state.ports?.length !== ports?.length
-			const groupCountChanged = this.state.groups?.length !== groups?.length
+			const portCountChanged = this.state.ports.length !== ports.length
+			const groupCountChanged = this.state.groups.length !== groups.length
 
 			this.state.device = device
 			this.state.ports = ports ?? []
 			this.state.groups = groups ?? []
 			this.state.trunks = trunks ?? []
-			this.state.activeProfile = typeof profileName === 'string' ? profileName : profileName?.name ?? ''
+			this.state.activeProfile =
+				typeof profileName === 'string' ? profileName : (profileName?.name ?? '')
 			this.state.profiles = profiles ?? []
 
 			// Gen1: merge group/trunk assignments into port objects
@@ -244,20 +255,19 @@ class LuminexGigaCoreInstance extends InstanceBase {
 				this.state.poeCapable = false
 			}
 
-			// If the shape of data changed, rebuild definitions (new ports/groups discovered)
 			if (portCountChanged || groupCountChanged) {
 				this.refreshDefinitions()
 			} else {
-				updateVariableValues(this)
+				UpdateVariableValues(this)
 				this.checkFeedbacks()
 			}
 
 			this.updateStatus(InstanceStatus.Ok)
 		} catch (e) {
-			this.log('error', `Poll failed: ${e.message}`)
-			this.updateStatus(InstanceStatus.ConnectionFailure, e.message)
+			this.log('error', `Poll failed: ${(e as Error).message}`)
+			this.updateStatus(InstanceStatus.ConnectionFailure, (e as Error).message)
 		}
 	}
 }
 
-runEntrypoint(LuminexGigaCoreInstance, UpgradeScripts)
+runEntrypoint(ModuleInstance, UpgradeScripts)

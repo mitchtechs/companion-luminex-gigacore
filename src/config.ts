@@ -1,6 +1,13 @@
-import { Regex } from '@companion-module/base'
+import { Regex, type SomeCompanionConfigField } from '@companion-module/base'
 
-export function getConfigFields() {
+export interface ModuleConfig {
+	host: string
+	password: string
+	generation: 'gen1' | 'gen2'
+	pollInterval: number
+}
+
+export function GetConfigFields(): SomeCompanionConfigField[] {
 	return [
 		{
 			type: 'textinput',
@@ -8,7 +15,6 @@ export function getConfigFields() {
 			label: 'Device IP Address',
 			width: 6,
 			regex: Regex.IP,
-			required: true,
 		},
 		{
 			type: 'textinput',
@@ -38,7 +44,7 @@ export function getConfigFields() {
 			default: 5000,
 			min: 1000,
 			max: 60000,
-			tooltip: 'Gen2 devices use WebSocket for real-time updates and only poll as a fallback. Gen1 devices rely on polling.',
+			tooltip: 'Gen2 uses WebSocket for real-time updates with polling as fallback. Gen1 relies on polling.',
 		},
 	]
 }
