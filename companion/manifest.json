@@ -1,6 +1,6 @@
 {
     "$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
-    "id": "luminex-gigacore",
+    "id": "pda-luminex-gigacore",
     "name": "Luminex GigaCore",
     "shortname": "GigaCore",
     "description": "Control Luminex GigaCore network switches via REST API and WebSocket. Supports all GigaCore models (10i, 16t, 26i, etc.).",
