@@ -1,5 +1,6 @@
 {
     "$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
+    "type": "connection",
     "id": "pda-luminex-gigacore",
     "name": "Luminex GigaCore",
     "shortname": "GigaCore",
@@ -10,7 +11,10 @@
         "type": "node22",
         "api": "nodejs-ipc",
         "apiVersion": "0.0.0",
-        "entrypoint": "../dist/main.js"
+        "entrypoint": "../dist/main.js",
+        "permissions": {
+            "filesystem": true
+        }
     },
     "manufacturer": "Luminex",
     "products": [
@@ -27,7 +31,10 @@
     "bugs": "https://github.com/bitfocus/companion-module-luminex-gigacore/issues",
     "maintainers": [
         {
-            "name": "Mitch Bailey"
+            "name": "Mitch Bailey",
+            "email": "mitch@pda-tech.com",
+            "github": "mitchtechs",
+            "url": "https://pda-tech.com"
         }
     ]
 }

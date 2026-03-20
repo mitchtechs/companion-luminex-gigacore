@@ -1,34 +1,34 @@
 {
-	"name": "companion-module-luminex-gigacore",
-	"version": "0.1.0",
-	"main": "dist/main.js",
-	"type": "module",
-	"scripts": {
-		"package": "yarn build && companion-module-build",
-		"dev": "tsc -p tsconfig.build.json --watch",
-		"build": "rimraf dist && tsc -p tsconfig.build.json",
-		"lint:raw": "eslint",
-		"lint": "yarn lint:raw ."
-	},
-	"license": "MIT",
-	"engines": {
-		"node": "^22.20",
-		"yarn": "^4"
-	},
-	"dependencies": {
-		"@companion-module/base": "~1.14.1",
-		"ws": "^8.18.0"
-	},
-	"devDependencies": {
-		"@companion-module/tools": "^2.6.1",
-		"@types/node": "^22.15.0",
-		"@types/ws": "^8.18.1",
-		"eslint": "^9.20.0",
-		"prettier": "^3.5.0",
-		"rimraf": "^6.0.0",
-		"typescript": "~5.7.0",
-		"typescript-eslint": "^8.25.0"
-	},
-	"prettier": "@companion-module/tools/.prettierrc.json",
-	"packageManager": "yarn@4.6.0"
+  "name": "companion-module-luminex-gigacore",
+  "version": "0.1.0",
+  "main": "dist/main.js",
+  "scripts": {
+    "package": "yarn build && companion-module-build",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "lint:raw": "eslint",
+    "lint": "yarn lint:raw ."
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "^22.20",
+    "yarn": "^4"
+  },
+  "dependencies": {
+    "@companion-module/base": "~1.14.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@companion-module/tools": "^2.6.1",
+    "@types/node": "^22.15.0",
+    "@types/ws": "^8.18.1",
+    "eslint": "^9.20.0",
+    "prettier": "^3.5.0",
+    "rimraf": "^6.0.0",
+    "typescript": "~5.7.0",
+    "typescript-eslint": "^8.25.0"
+  },
+  "prettier": "@companion-module/tools/.prettierrc.json",
+  "packageManager": "yarn@4.6.0",
+  "type": "module"
 }
