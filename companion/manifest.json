@@ -36,5 +36,18 @@
             "github": "mitchtechs",
             "url": "https://pda-tech.com"
         }
-    ]
+    ],
+    "bonjourQueries": {
+        "gigacore_host": [
+            {
+                "type": "_http",
+                "protocol": "tcp",
+                "port": 80
+            },
+            {
+                "type": "luminex",
+                "protocol": "tcp"
+            }
+        ]
+    }
 }

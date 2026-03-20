@@ -65,16 +65,28 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 		}
 	}
 
+	private getHostAddress(): string | null {
+		if (this.config.gigacore_host) {
+			const ip = this.config.gigacore_host.split(':')[0]
+			const regex = /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$/
+			if (regex.test(ip)) return ip
+			this.log('warn', `Bonjour host IP "${ip}" has unexpected format`)
+			return null
+		}
+		return this.config.host || null
+	}
+
 	private initApi(): void {
-		if (!this.config.host) {
+		const host = this.getHostAddress()
+		if (!host) {
 			this.updateStatus(InstanceStatus.BadConfig, 'No host configured')
 			return
 		}
 
 		if (this.config.generation === 'gen1') {
-			this.api = new GigaCoreGen1Api(this.config.host, this.config.password)
+			this.api = new GigaCoreGen1Api(host, this.config.password)
 		} else {
-			this.api = new GigaCoreApi(this.config.host, this.config.password)
+			this.api = new GigaCoreApi(host, this.config.password)
 		}
 	}
 
