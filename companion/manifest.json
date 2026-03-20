@@ -1,32 +1,34 @@
 {
-	"$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
-	"id": "luminex-gigacore",
-	"name": "luminex-gigacore",
-	"shortname": "GigaCore",
-	"description": "Control Luminex GigaCore network switches via REST API and WebSocket.",
-	"version": "0.1.0",
-	"license": "MIT",
-	"runtime": {
-		"type": "node22",
-		"api": "nodejs-ipc",
-		"apiVersion": "0.0.0",
-		"entrypoint": "../dist/main.js"
-	},
-	"manufacturer": "Luminex",
-	"products": [
-		"GigaCore 10i",
-		"GigaCore 10t",
-		"GigaCore 16i",
-		"GigaCore 16t",
-		"GigaCore 18t",
-		"GigaCore 20t",
-		"GigaCore 30i",
-		"GigaCore 10",
-		"GigaCore 12",
-		"GigaCore 14R",
-		"GigaCore 16Xt",
-		"GigaCore 16RFO",
-		"GigaCore 26i"
-	],
-	"keywords": ["network", "switch", "av", "ethernet"]
+    "$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
+    "id": "luminex-gigacore",
+    "name": "Luminex GigaCore",
+    "shortname": "GigaCore",
+    "description": "Control Luminex GigaCore network switches via REST API and WebSocket. Supports all GigaCore models (10i, 16t, 26i, etc.).",
+    "version": "0.1.0",
+    "license": "MIT",
+    "runtime": {
+        "type": "node22",
+        "api": "nodejs-ipc",
+        "apiVersion": "0.0.0",
+        "entrypoint": "../dist/main.js"
+    },
+    "manufacturer": "Luminex",
+    "products": [
+        "GigaCore"
+    ],
+    "keywords": [
+        "network",
+        "switch",
+        "av",
+        "ethernet"
+    ],
+    "legacyIds": [],
+    "repository": "git+https://github.com/bitfocus/companion-module-luminex-gigacore.git",
+    "bugs": "https://github.com/bitfocus/companion-module-luminex-gigacore/issues",
+    "maintainers": [
+        {
+            "name": "Mitch Bailey",
+            "company": "PDA Technical Limited"
+        }
+    ]
 }
