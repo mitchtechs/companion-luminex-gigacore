@@ -27,8 +27,7 @@
     "bugs": "https://github.com/bitfocus/companion-module-luminex-gigacore/issues",
     "maintainers": [
         {
-            "name": "Mitch Bailey",
-            "company": "PDA Technical Limited"
+            "name": "Mitch Bailey"
         }
     ]
 }
