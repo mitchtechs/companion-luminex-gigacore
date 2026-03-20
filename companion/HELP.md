@@ -1,5 +1,8 @@
 # Luminex GigaCore
 
+> Developed by **[PDA Technical Limited](https://pda-tech.com)**
+
+
 Control Luminex GigaCore network switches over their REST API.
 
 ## Configuration
