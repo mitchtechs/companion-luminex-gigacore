@@ -57,7 +57,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		category: 'Device',
 		name: 'Device Info',
 		style: {
-			text: `$(${label}:device_name)\\n$(${label}:device_model)`,
+			text: `$(${label}:device_name)\\n$(${label}:device_model)\\nDevice Info`,
 			size: 'auto',
 			color: White,
 			bgcolor: Black,
@@ -114,7 +114,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 		category: 'Device',
 		name: 'Active Profile',
 		style: {
-			text: `📋 $(${label}:active_profile)`,
+			text: `📋 $(${label}:active_profile)\\nActive Profile`,
 			size: 'auto',
 			color: Amber,
 			bgcolor: Black,
@@ -215,7 +215,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				category: 'Ports',
 				name: `Port ${n}: ${port.legend || `Port ${n}`}`,
 				style: {
-					text: `$(${label}:port_${n}_legend)\\n${emoji}`,
+					text: `$(${label}:port_${n}_legend)\\n${emoji} Port ${n}`,
 					size: 'auto',
 					color: White,
 					bgcolor: colors.disabled,
@@ -279,7 +279,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				category: `Assign → ${groupLabel}`,
 				name: `Port ${n} → ${groupLabel}`,
 				style: {
-					text: `$(${label}:port_${n}_legend)\\n→ ${groupLabel}`,
+					text: `$(${label}:port_${n}_legend)\\nPort ${n} → ${groupLabel}`,
 					size: 'auto',
 					color: White,
 					bgcolor: DarkGrey,
@@ -343,7 +343,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				category: 'PoE',
 				name: `PoE: Port ${n}`,
 				style: {
-					text: `⚡ $(${label}:port_${n}_legend)\\nPoE Off`,
+					text: `⚡ $(${label}:port_${n}_legend)\\nPort ${n} PoE Off`,
 					size: 'auto',
 					color: Grey,
 					bgcolor: DarkGrey,
@@ -358,7 +358,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 					{
 						feedbackId: FeedbackId.PoeActive,
 						options: { port: n },
-						style: { text: `⚡ $(${label}:port_${n}_legend)\\nPoE On`, bgcolor: Red, color: White },
+						style: { text: `⚡ $(${label}:port_${n}_legend)\\nPort ${n} PoE On`, bgcolor: Red, color: White },
 					},
 				],
 			}
@@ -405,7 +405,7 @@ export function UpdatePresets(self: ModuleInstance): void {
 				category: `Assign → ${trunkLabel}`,
 				name: `Port ${n} → ${trunkLabel}`,
 				style: {
-					text: `$(${label}:port_${n}_legend)\\n→ ${trunkLabel}`,
+					text: `$(${label}:port_${n}_legend)\\nPort ${n} → ${trunkLabel}`,
 					size: 'auto',
 					color: White,
 					bgcolor: DarkGrey,
