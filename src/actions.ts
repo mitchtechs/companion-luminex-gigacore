@@ -265,7 +265,5 @@ function buildTrunkChoices(trunks: TrunkInfo[]) {
 
 function buildProfileChoices(profiles: ProfileInfo[]) {
 	if (!profiles.length) return [{ id: 1, label: 'Slot 1' }]
-	return profiles
-		.filter((p) => p.name)
-		.map((p) => ({ id: p.slot, label: p.name || `Slot ${p.slot}` }))
+	return profiles.filter((p) => p.name).map((p) => ({ id: p.slot, label: p.name || `Slot ${p.slot}` }))
 }

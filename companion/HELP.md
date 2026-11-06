@@ -2,7 +2,6 @@
 
 > Developed by **[PDA Technical Limited](https://pda-tech.com)**
 
-
 Control Luminex GigaCore network switches over their REST API.
 
 ## Configuration
@@ -15,11 +14,13 @@ Control Luminex GigaCore network switches over their REST API.
 ## Supported Devices
 
 ### Gen2 (WebSocket + REST)
+
 GigaCore 10i, 10t, 16i, 16t, 18t, 20t, 30i (firmware 1.2.0+)
 
 Gen2 devices use WebSocket for real-time state updates with HTTP polling as a fallback.
 
 ### Gen1 (REST only)
+
 GigaCore 10, 12, 14R, 16Xt, 16RFO, 26i (firmware 3.0.2+)
 
 Gen1 devices use HTTP polling only. The poll interval setting controls how frequently state is refreshed.

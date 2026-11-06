@@ -22,6 +22,7 @@ Supports both **Gen 1** (older firmware) and **Gen 2** (REST + WebSocket) device
 ## Features
 
 ### Actions
+
 - Activate a profile
 - Set port label
 - Set port VLAN
@@ -29,33 +30,37 @@ Supports both **Gen 1** (older firmware) and **Gen 2** (REST + WebSocket) device
 - Reboot device
 
 ### Feedbacks
+
 - Active profile indicator
 - Port link status (up/down)
 - PoE port status
 
 ### Variables
+
 - Device name, model, firmware version
 - Active profile name
 - Per-port link status, speed, label
 
 ### Presets
+
 - Pre-built buttons for common profile switching and port monitoring
 
 ---
 
 ## Configuration
 
-| Field | Description |
-|-------|-------------|
-| Host | IP address of the GigaCore switch |
-| Gen 1 | Enable for older Gen 1 hardware |
-| Poll Interval | How often to refresh state (ms) |
+| Field         | Description                       |
+| ------------- | --------------------------------- |
+| Host          | IP address of the GigaCore switch |
+| Gen 1         | Enable for older Gen 1 hardware   |
+| Poll Interval | How often to refresh state (ms)   |
 
 ---
 
 ## Connection
 
 The module connects via:
+
 - **REST API** — for configuration and control
 - **WebSocket** — for real-time state updates (Gen 2 only)
 

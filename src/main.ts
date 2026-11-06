@@ -149,15 +149,12 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				break
 
 			case 'config/name':
-				this.state.activeProfile =
-					typeof data === 'string' ? data : ((data as { name?: string })?.name ?? '')
+				this.state.activeProfile = typeof data === 'string' ? data : ((data as { name?: string })?.name ?? '')
 				changed = true
 				break
 
 			case 'config/profiles': {
-				const profileUpdates = Array.isArray(data)
-					? (data as ProfileInfo[])
-					: [data as ProfileInfo]
+				const profileUpdates = Array.isArray(data) ? (data as ProfileInfo[]) : [data as ProfileInfo]
 				for (const update of profileUpdates) {
 					const idx = this.state.profiles.findIndex((p) => p.slot === update.slot)
 					if (idx >= 0) {
@@ -176,9 +173,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 				break
 
 			case 'poe/ports': {
-				const poeUpdates = Array.isArray(data)
-					? (data as PoePortInfo[])
-					: [data as PoePortInfo]
+				const poeUpdates = Array.isArray(data) ? (data as PoePortInfo[]) : [data as PoePortInfo]
 				for (const update of poeUpdates) {
 					const idx = this.state.poePorts.findIndex((p) => p.port_number === update.port_number)
 					if (idx >= 0) {
@@ -247,8 +242,7 @@ export class ModuleInstance extends InstanceBase<ModuleConfig> {
 			this.state.ports = ports ?? []
 			this.state.groups = groups ?? []
 			this.state.trunks = trunks ?? []
-			this.state.activeProfile =
-				typeof profileName === 'string' ? profileName : (profileName?.name ?? '')
+			this.state.activeProfile = typeof profileName === 'string' ? profileName : (profileName?.name ?? '')
 			this.state.profiles = profiles ?? []
 
 			// Gen1: merge group/trunk assignments into port objects

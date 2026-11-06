@@ -24,7 +24,9 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 				<strong>Auto-discovery</strong> — If your GigaCore appears in the dropdown below, select it.
 				Otherwise enter the IP address manually. Auto-discovery requires the switch and this
 				computer to be on the same network and mDNS/Bonjour to be enabled (Gen2 only).
-			`.replace(/\t/g, '').trim(),
+			`
+				.replace(/\t/g, '')
+				.trim(),
 		},
 
 		// ── Auto-discovery ────────────────────────────────────────────────────

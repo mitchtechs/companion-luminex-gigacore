@@ -174,8 +174,7 @@ export class GigaCoreWebSocket {
 		}
 
 		const path =
-			(msg.path as string) ??
-			((msg.subscription as Record<string, unknown> | undefined)?.path as string | undefined)
+			(msg.path as string) ?? ((msg.subscription as Record<string, unknown> | undefined)?.path as string | undefined)
 		const data = msg.data ?? msg
 
 		if (!path) return

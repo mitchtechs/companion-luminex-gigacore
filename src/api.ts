@@ -1,4 +1,12 @@
-import type { DeviceInfo, GigaCoreApiInterface, GroupInfo, PoePortInfo, PortInfo, ProfileInfo, TrunkInfo } from './types.js'
+import type {
+	DeviceInfo,
+	GigaCoreApiInterface,
+	GroupInfo,
+	PoePortInfo,
+	PortInfo,
+	ProfileInfo,
+	TrunkInfo,
+} from './types.js'
 
 /**
  * Luminex GigaCore Gen2 REST API client
