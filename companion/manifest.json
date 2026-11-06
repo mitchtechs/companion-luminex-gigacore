@@ -1,53 +1,53 @@
 {
-    "$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
-    "type": "connection",
-    "id": "pda-luminex-gigacore",
-    "name": "Luminex GigaCore",
-    "shortname": "GigaCore",
-    "description": "Control Luminex GigaCore network switches via REST API and WebSocket. Supports all GigaCore models (10i, 16t, 26i, etc.).",
-    "version": "0.1.0",
-    "license": "MIT",
-    "runtime": {
-        "type": "node22",
-        "api": "nodejs-ipc",
-        "apiVersion": "0.0.0",
-        "entrypoint": "../dist/main.js",
-        "permissions": {
-            "filesystem": true
-        }
-    },
-    "manufacturer": "Luminex",
-    "products": [
-        "GigaCore"
-    ],
-    "keywords": [
-        "network",
-        "switch",
-        "av",
-        "ethernet"
-    ],
-    "legacyIds": [],
-    "repository": "git+https://github.com/bitfocus/companion-module-luminex-gigacore.git",
-    "bugs": "https://github.com/bitfocus/companion-module-luminex-gigacore/issues",
-    "maintainers": [
-        {
-            "name": "Mitch Bailey",
-            "email": "mitch@pda-tech.com",
-            "github": "mitchtechs",
-            "url": "https://pda-tech.com"
-        }
-    ],
-    "bonjourQueries": {
-        "gigacore_host": [
-            {
-                "type": "_http",
-                "protocol": "tcp",
-                "port": 80
-            },
-            {
-                "type": "luminex",
-                "protocol": "tcp"
-            }
-        ]
+  "$schema": "../node_modules/@companion-module/base/assets/manifest.schema.json",
+  "type": "connection",
+  "id": "pda-luminex-gigacore",
+  "name": "Luminex GigaCore",
+  "shortname": "GigaCore",
+  "description": "Control Luminex GigaCore network switches via REST API and WebSocket. Supports all GigaCore models (10i, 16t, 26i, etc.).",
+  "version": "0.1.0",
+  "license": "MIT",
+  "runtime": {
+    "type": "node22",
+    "api": "nodejs-ipc",
+    "apiVersion": "0.0.0",
+    "entrypoint": "../dist/main.js",
+    "permissions": {
+      "filesystem": true
     }
+  },
+  "manufacturer": "Luminex",
+  "products": [
+    "GigaCore (PDA)"
+  ],
+  "keywords": [
+    "network",
+    "switch",
+    "av",
+    "ethernet"
+  ],
+  "legacyIds": [],
+  "repository": "git+https://github.com/bitfocus/companion-module-luminex-gigacore.git",
+  "bugs": "https://github.com/bitfocus/companion-module-luminex-gigacore/issues",
+  "maintainers": [
+    {
+      "name": "Mitch Bailey",
+      "email": "mitch@pda-tech.com",
+      "github": "mitchtechs",
+      "url": "https://pda-tech.com"
+    }
+  ],
+  "bonjourQueries": {
+    "gigacore_host": [
+      {
+        "type": "_http",
+        "protocol": "tcp",
+        "port": 80
+      },
+      {
+        "type": "luminex",
+        "protocol": "tcp"
+      }
+    ]
+  }
 }
